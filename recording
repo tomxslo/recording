@@ -1,0 +1,32 @@
+#!/bin/bash
+case "$1" in
+start)
+   cd /opt/SS/
+   ./StreamCapture > info &
+   echo $!>/opt/SS/recording.pid
+   chmod 777 /opt/SS/recording.pid
+   echo Recording server started.
+   ;;
+stop)
+   ppid=$(cat /opt/SS/recording.pid)
+   echo $ppid
+   /usr/local/bin/kill3 $ppid
+   rm /opt/SS/recording.pid
+   ;;
+restart)
+   $0 stop
+   $0 start
+   ;;
+status)
+   if [ -e /opt/SS/recording.pid ]; then
+      echo Recording server is running, pid=`cat /opt/SS/recording.pid`
+   else
+      echo Recording server is NOT running
+      exit 1
+   fi
+   ;;
+*)
+   echo "Usage: $0 {start|stop|status|restart}"
+esac
+
+exit 0 
